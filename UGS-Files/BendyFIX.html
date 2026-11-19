@@ -1,0 +1,122 @@
+<!--
+Bendy and the Ink Machine: ALL CHAPTERS downloaded from gn-math! at 11/19/2026
+
+https://gn-math.dev
+https://discord.gg/gn-math
+-->
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <base href="https://gcore.jsdelivr.net/gh/woahhcrackers/BATIMWeb@main/" />
+    <link rel="shortcut icon" href="TemplateData/favicon.ico" />
+    <link rel="stylesheet" href="TemplateData/style.css" />
+  </head>
+
+  <body>
+    <div id="unity-container" class="unity-desktop">
+      <canvas
+        id="unity-canvas"
+        width="1280"
+        height="720"
+        tabindex="-1"
+      ></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-full"></div>
+      </div>
+    </div>
+    <div id="unity-warning"></div>
+    <div id="unity-footer">
+      <div id="unity-logo-title-footer"></div>
+      <div id="unity-fullscreen-button"></div>
+      <div id="unity-build-title">Bendy and the Ink Machine</div>
+    </div>
+
+    <script>
+      window.fileMergerConfig = {
+        files: [
+          {
+            name: "bend.data",
+            parts: 29,
+          },
+          {
+            name: "bend.wasm",
+            parts: 2,
+          },
+        ],
+        basePath: "Build/",
+        debug: true,
+      };
+    </script>
+    <script src="https://gcore.jsdelivr.net/gh/woahhcrackers/BATIMWeb@main/merge.js"></script>
+    <script>
+      var canvas = document.querySelector("#unity-canvas");
+      function unityShowBanner(msg, type) {
+        var warningBanner = document.querySelector("#unity-warning");
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length
+            ? "block"
+            : "none";
+        }
+        var div = document.createElement("div");
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == "error") div.style = "background: red; padding: 10px;";
+        else {
+          if (type == "warning")
+            div.style = "background: yellow; padding: 10px;";
+          setTimeout(function () {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/bend.loader.js";
+      var config = {
+        arguments: [],
+        dataUrl: buildUrl + "/bend.data",
+        frameworkUrl: buildUrl + "/bend.framework.js",
+        codeUrl: buildUrl + "/bend.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "crackers",
+        productName: "Bendy and the Ink Machine",
+        productVersion: "0.0.2",
+        showBanner: unityShowBanner,
+      };
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        var meta = document.createElement("meta");
+        meta.name = "viewport";
+        meta.content =
+          "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
+        document.getElementsByTagName("head")[0].appendChild(meta);
+        document.querySelector("#unity-container").className = "unity-mobile";
+        canvas.className = "unity-mobile";
+        config.devicePixelRatio = 1;
+      } else {
+        canvas.style.width = "105vw";
+        canvas.style.height = "105vh";
+      }
+      document.querySelector("#unity-loading-bar").style.display = "block";
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          document.querySelector("#unity-progress-bar-full").style.width =
+            100 * progress + "%";
+        })
+          .then((unityInstance) => {
+            document.querySelector("#unity-loading-bar").style.display = "none";
+            document.querySelector("#unity-fullscreen-button").onclick = () => {
+              unityInstance.SetFullscreen(1);
+            };
+          })
+          .catch((message) => {
+            alert(message);
+          });
+      };
+      document.body.appendChild(script);
+    </script>
+  </body>
+</html>
